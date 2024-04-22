@@ -13,28 +13,6 @@ stages:
             deploy:
               steps:
 
-                - task: AzureCLI@2
-                  displayName: Fetch configuration for $(APP_CONFIG_NAME) from Azure App Config service.
-                  inputs:
-                    azureSubscription: $(AZURE_APP_CONFIG_SP)
-                    scriptType: bash
-                    scriptLocation: inlineScript
-                    inlineScript: |
-                      az --version
-                      az account show
-                      echo "exporting configuration from azure app configuration with prefix $(SERVICE_NAME)"
-                      az appconfig kv list -n $(APP_CONFIG_NAME) --label $(ADO_ENVIRONMENT_NAME) --key "/$(SERVICE_NAME)*" --fields key value | jq -r '.[] | .key + "=" + (.value | sub("\n"; ""; "g"))' | sed -e 's/\/$(SERVICE_NAME)\///g' > $(Build.ArtifactStagingDirectory)/appConfig.properties
-                      cat $(Build.ArtifactStagingDirectory)/appConfig.properties
-
-                - task: Kubernetes@1
-                  displayName: "Create/Update ConfigMap of app configuration for $(SERVICE_NAME)"
-                  inputs:
-                    kubernetesServiceEndpoint: $(K8_SERVICE_CONNECTION_NAME)
-                    namespace: $(K8_NAMESPACE)
-                    forceUpdateConfigMap: true
-                    configMapName: $(SERVICE_NAME)-config
-                    configMapArguments: --from-env-file $(Build.ArtifactStagingDirectory)/appConfig.properties
-
                 - task: replacetokens@5
                   displayName: Replace tokens in AKS csi secrets manifest
                   inputs:
