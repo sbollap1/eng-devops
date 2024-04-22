@@ -1,0 +1,101 @@
+stages:
+  - stage: Deploy
+    displayName: Deploy stage
+
+    jobs:
+      - deployment: Deploy
+        environment: $(ADO_ENVIRONMENT_NAME)
+        displayName: Deploy
+        pool:
+          name: self-hosted
+        strategy:
+          runOnce:
+            deploy:
+              steps:
+                - checkout: self
+                - checkout: engage-devops
+
+                - task: AzureCLI@2
+                  displayName: Fetch configuration for $(APP_CONFIG_NAME) from Azure App Config service.
+                  inputs:
+                    azureSubscription: $(AZURE_APP_CONFIG_SP)
+                    scriptType: bash
+                    scriptLocation: inlineScript
+                    inlineScript: |
+                      az --version
+                      az account show
+                      echo "exporting configuration from azure app configuration with prefix $(SERVICE_NAME)"
+                      az appconfig kv list -n $(APP_CONFIG_NAME) --label $(ADO_ENVIRONMENT_NAME) --key "/$(SERVICE_NAME)*" --fields key value | jq -r '.[] | .key + "=" + (.value | sub("\n"; ""; "g"))' | sed -e 's/\/$(SERVICE_NAME)\///g' > $(Build.ArtifactStagingDirectory)/appConfig.properties
+                      cat $(Build.ArtifactStagingDirectory)/appConfig.properties
+
+                - task: Kubernetes@1
+                  displayName: "Create/Update ConfigMap of app configuration for $(SERVICE_NAME)"
+                  inputs:
+                    kubernetesServiceEndpoint: $(K8_SERVICE_CONNECTION_NAME)
+                    namespace: $(K8_NAMESPACE)
+                    forceUpdateConfigMap: true
+                    configMapName: $(SERVICE_NAME)-config
+                    configMapArguments: --from-env-file $(Build.ArtifactStagingDirectory)/appConfig.properties
+
+                - task: replacetokens@5
+                  displayName: Replace tokens in AKS csi secrets manifest
+                  inputs:
+                    targetFiles: '$(Build.SourcesDirectory)/engage-devops/helm/secret-provider/templates/secretproviderclass.yaml'
+                    encoding: 'auto'
+                    tokenPattern: 'default'
+                    writeBOM: true
+                    actionOnMissing: 'fail'
+                    keepToken: false
+                    actionOnNoFiles: 'fail'
+                    enableTransforms: false
+                    enableRecursion: false
+                    useLegacyPattern: false
+                    enableTelemetry: true
+
+                - task: KubernetesManifest@0
+                  name: bake_secret_provider_class
+                  displayName: Bake changes to SecretProviderClass
+                  inputs:
+                    action: 'bake'
+                    namespace: $(K8_NAMESPACE)
+                    helmChart: '$(Build.SourcesDirectory)/engage-devops/helm/secret-provider'
+                    overrideFiles: '$(Build.SourcesDirectory)/$(GIT_REPO_NAME)/helm/secrets.yaml'
+                    renderType: 'helm'
+
+                - task: KubernetesManifest@0
+                  displayName: Deploy SecretProviderClass
+                  inputs:
+                    action: 'deploy'
+                    rolloutStatusTimeout: 60
+                    kubernetesServiceConnection: $(K8_SERVICE_CONNECTION_NAME)
+                    namespace: $(K8_NAMESPACE)
+                    manifests: '$(bake_secret_provider_class.manifestsBundle)'
+                    containers: |
+                      $(ACR_INSTANCE)/$(SERVICE_NAME):$(CONTAINER_TAG)
+
+                - task: KubernetesManifest@0
+                  name: bake_service
+                  displayName: Bake changes to service
+                  inputs:
+                    action: 'bake'
+                    namespace: $(K8_NAMESPACE)
+                    helmChart: '$(Build.SourcesDirectory)/engage-devops/applications/$(SERVICE_NAME)/helm/service'
+                    renderType: 'helm'
+                    overrideFiles: |
+                      $(Build.SourcesDirectory)/engage-devops/applications/$(SERVICE_NAME)/helm/service/${{ parameters.TARGET_ENV }}/values.yaml
+
+                - script: |
+                    echo "Manifests being deployed:"
+                    cat $(bake_service.manifestsBundle)
+                  displayName: 'List manifests'                    
+
+                - task: KubernetesManifest@0
+                  displayName: Deploy K8s service
+                  inputs:
+                    action: 'deploy'
+                    rolloutStatusTimeout: 90
+                    kubernetesServiceConnection: $(K8_SERVICE_CONNECTION_NAME)
+                    namespace: $(K8_NAMESPACE)
+                    manifests: '$(bake_service.manifestsBundle)'
+                    containers: |
+                      $(ACR_INSTANCE)/$(SERVICE_NAME):$(CONTAINER_TAG)
