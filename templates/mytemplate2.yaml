@@ -6,8 +6,6 @@ stages:
       - deployment: Deploy
         environment: $(ADO_ENVIRONMENT_NAME)
         displayName: Deploy
-        pool:
-          name: self-hosted
         strategy:
           runOnce:
             deploy:
