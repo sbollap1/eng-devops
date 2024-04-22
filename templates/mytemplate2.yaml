@@ -13,20 +13,6 @@ stages:
             deploy:
               steps:
 
-                - task: replacetokens@5
-                  displayName: Replace tokens in AKS csi secrets manifest
-                  inputs:
-                    targetFiles: '$(Build.SourcesDirectory)/engage-devops/helm/secret-provider/templates/secretproviderclass.yaml'
-                    encoding: 'auto'
-                    tokenPattern: 'default'
-                    writeBOM: true
-                    actionOnMissing: 'fail'
-                    keepToken: false
-                    actionOnNoFiles: 'fail'
-                    enableTransforms: false
-                    enableRecursion: false
-                    useLegacyPattern: false
-                    enableTelemetry: true
 
                 - task: KubernetesManifest@0
                   name: bake_secret_provider_class
