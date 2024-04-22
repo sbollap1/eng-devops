@@ -19,28 +19,18 @@ stages:
                   displayName: Bake changes to SecretProviderClass
                   inputs:
                     action: 'bake'
-                    namespace: $(K8_NAMESPACE)
+                    namespace: default
                     helmChart: '$(Build.SourcesDirectory)/engage-devops/helm/secret-provider'
                     overrideFiles: '$(Build.SourcesDirectory)/$(GIT_REPO_NAME)/helm/secrets.yaml'
                     renderType: 'helm'
 
-                - task: KubernetesManifest@0
-                  displayName: Deploy SecretProviderClass
-                  inputs:
-                    action: 'deploy'
-                    rolloutStatusTimeout: 60
-                    kubernetesServiceConnection: $(K8_SERVICE_CONNECTION_NAME)
-                    namespace: $(K8_NAMESPACE)
-                    manifests: '$(bake_secret_provider_class.manifestsBundle)'
-                    containers: |
-                      $(ACR_INSTANCE)/$(SERVICE_NAME):$(CONTAINER_TAG)
 
                 - task: KubernetesManifest@0
                   name: bake_service
                   displayName: Bake changes to service
                   inputs:
                     action: 'bake'
-                    namespace: $(K8_NAMESPACE)
+                    namespace: default
                     helmChart: '$(Build.SourcesDirectory)/engage-devops/applications/$(SERVICE_NAME)/helm/service'
                     renderType: 'helm'
                     overrideFiles: |
@@ -51,13 +41,3 @@ stages:
                     cat $(bake_service.manifestsBundle)
                   displayName: 'List manifests'                    
 
-                - task: KubernetesManifest@0
-                  displayName: Deploy K8s service
-                  inputs:
-                    action: 'deploy'
-                    rolloutStatusTimeout: 90
-                    kubernetesServiceConnection: $(K8_SERVICE_CONNECTION_NAME)
-                    namespace: $(K8_NAMESPACE)
-                    manifests: '$(bake_service.manifestsBundle)'
-                    containers: |
-                      $(ACR_INSTANCE)/$(SERVICE_NAME):$(CONTAINER_TAG)
