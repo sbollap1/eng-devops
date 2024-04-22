@@ -12,8 +12,6 @@ stages:
           runOnce:
             deploy:
               steps:
-                - checkout: self
-                - checkout: engage-devops
 
                 - task: AzureCLI@2
                   displayName: Fetch configuration for $(APP_CONFIG_NAME) from Azure App Config service.
