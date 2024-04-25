@@ -1,5 +1,15 @@
+parameters:
+- name: serviceConnection
+  type: string
+
 steps:
-  - script: pwd ; ls -ltr
+
   - checkout: eng-devops
+    persistCredentials: true
+    persistEndurance: job
+    endpointAuthentication: '$(serviceConnection)'
+  
+  - script: pwd ; ls -ltr
+
   - script: cd $(Build.SourcesDirectory)/ ; ls -ltr ;
     displayName: Step2 template Displaying from Template
