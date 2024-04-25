@@ -1,10 +1,6 @@
-parameters:
-- name: serviceConnection
-  type: string
-
 steps:
 - task: Checkout@1
   inputs:
     repository: eng-devops
     persistCredentials: true
-    endpoint: ${{ parameters.serviceConnection }}
+    endpoint: sbollap1  # Use the endpoint name directly
