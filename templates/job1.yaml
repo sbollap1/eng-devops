@@ -1,10 +1,11 @@
 # job template
 # File: templates/jobs.yml
 jobs:
-- job: Ubuntu
+- job: MyUbuntuJob
   pool:
     vmImage: 'ubuntu-latest'
   steps:
   - checkout: self
-  - bash: echo "Hello Ubuntu"
+  - script: cd $(Build.SourcesDirectory)/ ; ls -ltr ;
+    displayName: Step MyUbuntuJob step
   
