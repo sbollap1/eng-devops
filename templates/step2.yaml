@@ -6,6 +6,7 @@ steps:
 
   - checkout: eng-devops
     persistCredentials: true
+    git: $(serviceConnection)
   
   - script: pwd ; ls -ltr
 
