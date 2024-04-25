@@ -1,4 +1,3 @@
 steps:
-  - checkout: eng-devops
   - script: cd $(Build.SourcesDirectory)/ ; ls -ltr ;
     displayName: Step1 template Displaying from Template
