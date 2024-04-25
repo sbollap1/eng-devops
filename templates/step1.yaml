@@ -1,11 +1,3 @@
-resources:
-  repositories:
-  - repository: eng-devops
-    name: sbollap1/eng-devops
-    type: github
-    endpoint: sbollap1
-    ref: main
-
 steps:
   - checkout: eng-devops
   - script: cd $(Build.SourcesDirectory)/ ; ls -ltr ;
