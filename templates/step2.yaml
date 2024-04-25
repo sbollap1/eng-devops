@@ -9,7 +9,7 @@ steps:
 
 - task: Checkout@1
   inputs:
-    repository: 'sbollap1/eng-devops'
+    repository: eng-devops  # Use the repository resource alias
     persistCredentials: true
     endpoint: ${{ parameters.serviceConnection }}
 
