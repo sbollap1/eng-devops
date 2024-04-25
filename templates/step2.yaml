@@ -1,14 +1,30 @@
+# step2.yaml
 parameters:
 - name: serviceConnection
   type: string
 
 steps:
+- checkout: self  # Checkout the repository associated with the pipeline
+  persistCredentials: true
 
-  - checkout: eng-devops
-    persistCredentials: true
-    git: $(serviceConnection)
-  
-  - script: pwd ; ls -ltr
+- checkout: eng-devops  # Checkout the eng-devops repository
+  persistCredentials: true
 
-  - script: cd $(Build.SourcesDirectory)/ ; ls -ltr ;
-    displayName: Step2 template Displaying from Template
+- script: |
+    echo "Service Connection: ${{ parameters.serviceConnection }}"
+    echo "Build Sources Directory: $(Build.SourcesDirectory)"
+  displayName: 'Print environment variables'
+
+- script: |
+    pwd
+    ls -ltr
+  displayName: 'List files in current directory'
+  env:
+    CHECKOUT_REPOSITORY: ${{ parameters.serviceConnection }}
+
+- script: |
+    cd $(Build.SourcesDirectory)/eng-devops
+    ls -ltr
+  displayName: 'List files in eng-devops repository'
+  env:
+    CHECKOUT_REPOSITORY: ${{ parameters.serviceConnection }}
