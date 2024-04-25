@@ -1,4 +1,4 @@
 steps:
-  - checkout: self
+  - checkout: eng-scim
   - checkout: eng-devops
   - script: cd $(Build.SourcesDirectory)/ ; ls -ltr ;
