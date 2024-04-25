@@ -1,4 +1,4 @@
 steps:
-  - checkout: eng-scim
+  
   - script: cd $(Build.SourcesDirectory)/ ; ls -ltr ;
     displayName: Displaying from Template
