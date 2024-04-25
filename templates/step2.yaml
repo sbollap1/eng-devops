@@ -1,4 +1,4 @@
-nparameters:
+parameters:
 - name: serviceConnection
   type: string
 
