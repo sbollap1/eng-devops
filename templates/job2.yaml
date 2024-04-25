@@ -1,0 +1,10 @@
+# job template
+# File: templates/jobs.yml
+jobs:
+- job: MyAnotherJob
+  pool:
+    vmImage: 'ubuntu-latest'
+  steps:
+  - checkout: eng-devops
+  - script: cd $(Build.SourcesDirectory)/ ; ls -ltr ;
+    displayName: Step MyAnotherJob step
