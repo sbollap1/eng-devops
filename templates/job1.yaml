@@ -1,0 +1,10 @@
+# job template
+# File: templates/jobs.yml
+jobs:
+- job: Ubuntu
+  pool:
+    vmImage: 'ubuntu-latest'
+  steps:
+  - checkout: self
+  - bash: echo "Hello Ubuntu"
+  
