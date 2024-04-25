@@ -1,4 +1,4 @@
-parameters:
+nparameters:
 - name: serviceConnection
   type: string
 
@@ -6,7 +6,7 @@ steps:
 
   - checkout: eng-devops
     persistCredentials: true
-    endpointAuthentication: '$(serviceConnection)'
+    endpoint: '$(serviceConnection)'
   
   - script: pwd ; ls -ltr
 
