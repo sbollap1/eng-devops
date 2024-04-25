@@ -7,24 +7,14 @@ steps:
 - checkout: self  # Checkout the repository associated with the pipeline
   persistCredentials: true
 
-- checkout: eng-devops  # Checkout the eng-devops repository
-  persistCredentials: true
+- task: Checkout@1
+  inputs:
+    repository: 'sbollap1/eng-devops'
+    persistCredentials: true
+    endpoint: ${{ parameters.serviceConnection }}
 
-- script: |
-    echo "Service Connection: ${{ parameters.serviceConnection }}"
-    echo "Build Sources Directory: $(Build.SourcesDirectory)"
-  displayName: 'Print environment variables'
-
-- script: |
-    pwd
-    ls -ltr
+- script: pwd ; ls -ltr
   displayName: 'List files in current directory'
-  env:
-    CHECKOUT_REPOSITORY: ${{ parameters.serviceConnection }}
 
-- script: |
-    cd $(Build.SourcesDirectory)/eng-devops
-    ls -ltr
+- script: cd $(Build.SourcesDirectory)/eng-devops ; ls -ltr
   displayName: 'List files in eng-devops repository'
-  env:
-    CHECKOUT_REPOSITORY: ${{ parameters.serviceConnection }}
