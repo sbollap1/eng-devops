@@ -1,3 +1,4 @@
 steps:
+  - checkout: self
   - script: cd $(Build.SourcesDirectory)/ ; ls -ltr ;
     displayName: Step1 template Displaying from Template
