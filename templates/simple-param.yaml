@@ -6,7 +6,15 @@ parameters:
   type: string
 - name: endpoint
   type: string
-  
+
+resources:
+  repositories:
+    - repository: eng-devops
+      name: sbollap1/eng-devops
+      type: github
+      endpoint: sbollap1
+      ref: main
+
 steps:
 - checkout: ${{ parameters.endpoint }}
 - checkout: self
