@@ -9,7 +9,7 @@ parameters:
 
 resources:
   repositories:
-    - repository: eng-devops
+    - repository: eng-devops-another
       name: sbollap1/eng-devops
       type: github
       endpoint: sbollap1
