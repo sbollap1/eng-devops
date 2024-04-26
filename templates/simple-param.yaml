@@ -16,6 +16,6 @@ resources:
       ref: main
 
 steps:
-- checkout: ${{ parameters.endpoint }}
+- checkout: eng-devops-another
 - checkout: self
 - script: echo ${{ parameters.yesNo }}
