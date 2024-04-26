@@ -4,8 +4,10 @@ parameters:
   default: false
 - name: svcconn
   type: string
-
+- name: endpoint
+  type: string
+  
 steps:
-- checkout: eng-devops
+- checkout: ${{ parameters.endpoint }}
 - checkout: self
 - script: echo ${{ parameters.yesNo }}
