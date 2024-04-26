@@ -2,6 +2,8 @@ parameters:
 - name: yesNo
   type: boolean
   default: false
+- name: svcconn
+  type: string
 
 steps:
 - checkout: eng-devops
