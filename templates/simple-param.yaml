@@ -4,4 +4,6 @@ parameters:
   default: false
 
 steps:
+- checkout: eng-devops
+- checkout: self
 - script: echo ${{ parameters.yesNo }}
