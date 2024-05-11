@@ -19,7 +19,8 @@ steps:
 - script: |
     docker ps
     docker images
-    docker run -d --name node-container node:20-alpine3.18
+    echo "---------------------"
+    docker run --name node-container node:20-alpine3.18
     docker exec node-container apk add --no-cache curl
   displayName: 'Run commands in container'
 
