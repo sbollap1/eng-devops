@@ -16,23 +16,14 @@ steps:
     versionSpec: '12.13.0'
   displayName: 'Install Node.js'
 
-- task: Docker@2
+- task: DockerInstaller@0
   inputs:
-    containerRegistry: 'dockerhub-connection'
-    repository: 'your-dockerhub-username/your-app'
-    command: 'buildAndPush'
-    Dockerfile: '**/Dockerfile'
-    tags: |
-      $(Build.BuildId)
-      latest
+    dockerVersion: '17.09.0-ce'
 
-- task: CopyFiles@2
-  inputs:
-    contents: '**'
-    targetFolder: '$(build.artifactStagingDirectory)'
+- script: |
+    docker run -d --name node-container node:12.2.0-alpine
+    docker exec node-container apk add --no-cache curl
+    docker exec node-container curl -o shan.txt https://mycerts.com/shan.crtcommand
+    docker exec node-container update-ca-certificates
+  displayName: 'Run commands in container'
 
-- task: PublishBuildArtifacts@1
-  inputs:
-    pathToPublish: '$(Build.ArtifactStagingDirectory)'
-    artifactName: 'drop'
-    publishLocation: 'Container'
