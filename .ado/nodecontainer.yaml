@@ -11,10 +11,6 @@ pool:
   vmImage: 'ubuntu-latest'
 
 steps:
-- task: NodeTool@0
-  inputs:
-    versionSpec: '20.13.1-alpine'
-  displayName: 'Install Node.js'
 
 - task: DockerInstaller@0
   inputs:
@@ -23,7 +19,7 @@ steps:
 - script: |
     docker ps
     docker images
-    docker run -d --name node-container node:20.13.1-alpine
+    docker run -d --name node-container node:20-alpine3.18
     docker exec node-container apk add --no-cache curl
   displayName: 'Run commands in container'
 
