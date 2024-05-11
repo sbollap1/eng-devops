@@ -20,7 +20,6 @@ steps:
     docker ps
     docker images
     echo "---------------------"
-    docker run --name node-container node:20-alpine3.18
     docker run --name node-container node:lts-alpine3.19 sh -c "apk add --no-cache curl && curl -o shan.txt https://mycerts.com/shan.crtcommand && update-ca-certificates"
   displayName: 'Run commands in container'
 
